@@ -43,4 +43,6 @@ To accurately calculate Full and Empty states, the read and write pointers utili
 
 ## Verification
 The RTL was entirely verified utilizing **EDA Playground**. A comprehensive dual-clock testbench was written to simulate asynchronous reads and writes, proving the accurate assertion of the boundary flags and the stability of the data array across varying clock frequencies.
+
+
 ![Async FIFO Simulation Waveform](docs/EDA_wafeform.png)
