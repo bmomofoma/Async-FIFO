@@ -3,30 +3,28 @@ module async_fifo #(
     parameter int DATA_WIDTH = 8,
     parameter int FIFO_DEPTH = 8
 )(
-    input  logic                    clk_wr,   // Write domain clock
-    input  logic                    clk_rd,   // Read domain clock
-    input  logic                    rst_n,    // Asynchronous active-low reset
-    input  logic                    cs,       // Chip select
-    input  logic                    wr_en,    // Write enable strobe
-    input  logic                    rd_en,    // Read enable strobe
-    input  logic [DATA_WIDTH-1:0]   data_in,  // Parallel incoming write data
-    output logic [DATA_WIDTH-1:0]   data_out, // Parallel outgoing read data
-    output logic                    full,     // Full capacity status flag
-    output logic                    empty     // Empty capacity status flag
+    input  logic                    clk_wr,  
+    input  logic                    clk_rd,   
+    input  logic                    rst_n,    
+    input  logic                    cs,       
+    input  logic                    wr_en,    
+    input  logic                    rd_en,    
+    input  logic [DATA_WIDTH-1:0]   data_in,  
+    output logic [DATA_WIDTH-1:0]   data_out,
+    output logic                    full,  
+    output logic                    empty   
 );
 
-    // 1. Calculate ADDR_WIDTH dynamically using $clog2(FIFO_DEPTH)
+    // Calculate ADDR_WIDTH dynamically using $clog2(FIFO_DEPTH)
     localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
-
-    // 2. Internal interconnect wires
     logic [ADDR_WIDTH-1:0] waddr;
     logic [ADDR_WIDTH-1:0] raddr;
-    logic [ADDR_WIDTH:0]   write_pointer;      // Gray pointer from write_engine
-    logic [ADDR_WIDTH:0]   read_pointer;       // Gray pointer from read_engine
-    logic [ADDR_WIDTH:0]   write_pointer_sync; // Synchronized write pointer in rd domain
-    logic [ADDR_WIDTH:0]   read_pointer_sync;  // Synchronized read pointer in wr domain
+    logic [ADDR_WIDTH:0]   write_pointer;      
+    logic [ADDR_WIDTH:0]   read_pointer;     
+    logic [ADDR_WIDTH:0]   write_pointer_sync; 
+    logic [ADDR_WIDTH:0]   read_pointer_sync;  
 
-    // 3. Instantiate Dual-Port Memory Array Core
+    // Instantiate Dual-Port Memory Array Core
     fifo_mem #(
         .DATA_WIDTH(DATA_WIDTH),
         .FIFO_DEPTH(FIFO_DEPTH),
@@ -42,7 +40,7 @@ module async_fifo #(
         .data_out(data_out)
     );
 
-    // 4. Instantiate Write Domain Control Engine
+    // Instantiate Write Domain Control Engine
     fifo_write #(
         .ADDR_WIDTH(ADDR_WIDTH)
     ) write_engine (
@@ -56,7 +54,7 @@ module async_fifo #(
         .read_pointer_sync(read_pointer_sync) 
     );
 
-    // 5. Instantiate Read Domain Control Engine
+    // Instantiate Read Domain Control Engine
     fifo_read #(
         .ADDR_WIDTH(ADDR_WIDTH)
     ) read_engine (
@@ -70,7 +68,7 @@ module async_fifo #(
         .write_pointer_sync(write_pointer_sync) 
     );
 
-    // 6. Synchronize Write Pointer over to the Read Clock Domain
+    // Synchronize Write Pointer over to the Read Clock Domain
     sync_ptr #(
         .ADDR_WIDTH(ADDR_WIDTH)
     ) write_to_read_sync (
@@ -80,7 +78,7 @@ module async_fifo #(
         .ptr_out(write_pointer_sync)
     );
 
-    // 7. Synchronize Read Pointer over to the Write Clock Domain
+    // Synchronize Read Pointer over to the Write Clock Domain
     sync_ptr #(
         .ADDR_WIDTH(ADDR_WIDTH)
     ) read_to_write_sync (
