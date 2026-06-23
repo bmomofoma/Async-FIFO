@@ -15,13 +15,6 @@ module fifo_mem #(
     output logic [DATA_WIDTH-1:0]   data_out
 );
 
-    // ====================================================
-    // YOUR CHALLENGE LOGIC GOES HERE
-    // ====================================================
-    // 1. Declare your multi-dimensional memory array (RAM)
-    // 2. Write a sequential always_ff block for writing data when cs, wr_en, and !full are true
-    // 3. Write a combinational assignment to continuously output data from the raddr index
-
     // 2-dimensional memory array
     logic [DATA_WIDTH - 1:0] mem [FIFO_DEPTH - 1:0];
 
